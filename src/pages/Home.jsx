@@ -1,25 +1,43 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 
-function PhotoGallery() {
+function Home() {
   const [models, setModels] = useState([]);
   const [selectedModel, setSelectedModel] = useState(null);
   const [photoIndex, setPhotoIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [slideIndex, setSlideIndex] = useState(0);
 
   const API_URL = "http://127.0.0.1:8000/api/models/";
 
+  // 4 landscape ad images - replace with your studio photos later
+  const adSlides = [
+    "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=2070&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1519608487953-e999c86e7455?q=80&w=2070&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1542038784456-1ea8e935640e?q=80&w=2070&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1452780212940-6f5c0d14d848?q=80&w=2070&auto=format&fit=crop"
+  ];
+
   useEffect(() => {
     fetch(API_URL)
-.then(res => res.json())
-.then(data => {
+   .then(res => res.json())
+   .then(data => {
         setModels(data);
         setLoading(false);
       })
-.catch(err => {
+   .catch(err => {
         console.log("API error:", err);
         setLoading(false);
       });
+  }, []);
+
+  // Auto transition ad slides every 5s
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setSlideIndex(prev => (prev + 1) % adSlides.length);
+    }, 5000);
+    return () => clearInterval(timer);
   }, []);
 
   const filteredModels = models.filter(m =>
@@ -63,134 +81,192 @@ function PhotoGallery() {
   }, [selectedModel, photoIndex]);
 
   if (loading) {
-    return <p className="text-center mt-20 text-gray-500">Loading...</p>;
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-400">Loading models...</p>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-6xl mx-auto">
-        <h2 className="text-3xl font-bold text-gray-800 mb-6">📸 Models Gallery</h2>
+    <div className="min-h-screen bg-black text-white">
 
-        <input
-          type="text"
-          placeholder="Search by name: Queen, Diana..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="w-full max-w-md px-4 py-2 mb-8 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
+      {/* Landscape Ad Slider - Full Width */}
+      <section className="relative w-full h-[70vh] max-h-[600px] overflow-hidden">
+        {adSlides.map((img, idx) => (
+          <div
+            key={idx}
+            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+              idx === slideIndex? 'opacity-100' : 'opacity-0'
+            }`}
+          >
+            <img
+              src={img}
+              alt={`Ad ${idx + 1}`}
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/30"></div>
+          </div>
+        ))}
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {filteredModels.map((model) => {
-            const imgs = getAllImages(model);
-            const cover = imgs[0]?.image;
+        {/* Slide dots */}
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+          {adSlides.map((_, idx) => (
+            <button
+              key={idx}
+              onClick={() => setSlideIndex(idx)}
+              className={`h-1 rounded-full transition-all duration-300 ${
+                idx === slideIndex? 'w-12 bg-white' : 'w-6 bg-white/40 hover:bg-white/60'
+              }`}
+            />
+          ))}
+        </div>
+      </section>
 
-            return (
-              <div
-                key={model.id}
-                className="group relative bg-gray-900 rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer"
-                onClick={() => openGallery(model, 0)}
-              >
-                <div className="relative h-[28rem] flex items-center justify-center">
-                  {cover? (
-                    <img
-                      src={cover}
-                      alt={model.name}
-                      className="max-w-full max-h-full object-contain transition-transform duration-300 group-hover:scale-105"
-                    />
-                  ) : (
-                    <div className="text-gray-400">No image</div>
-                  )}
+      {/* Search + All Models Grid */}
+      <section className="py-16 px-4">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-8">Browse All Talent</h2>
 
-                  {/* Removed badge - no more number sitting on photo */}
+          <div className="max-w-md mx-auto mb-12">
+            <input
+              type="text"
+              placeholder="Search by name: Queen, Diana..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full px-6 py-3 bg-gray-900 border-gray-800 rounded-lg focus:outline-none focus:border-purple-500 transition-colors text-white placeholder-gray-500"
+            />
+          </div>
 
-                  {/* Bottom gradient only on hover */}
-                  <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {filteredModels.map((model) => {
+              const imgs = getAllImages(model);
+              const cover = imgs[0]?.image;
 
-                  {/* Text that slides up on hover */}
-                  <div className="absolute bottom-0 left-0 right-0 p-4 z-20 pointer-events-none">
-                    <div className="translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+              return (
+                <div
+                  key={model.id}
+                  className="group relative bg-gray-900 rounded-xl overflow-hidden hover:shadow-2xl hover:shadow-purple-500/20 transition-all duration-300 cursor-pointer border-gray-800 hover:border-purple-500"
+                  onClick={() => openGallery(model, 0)}
+                >
+                  <div className="relative h-80">
+                    {cover? (
+                      <img
+                        src={cover}
+                        alt={model.name}
+                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gray-800 flex items-center justify-center text-gray-400">No image</div>
+                    )}
+
+                    <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+                    <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
                       <h3 className="text-white text-xl font-bold mb-1">{model.name}</h3>
                       <p className="text-gray-300 text-sm">{imgs.length} photo{imgs.length!== 1? 's' : ''}</p>
                     </div>
-                  </div>
 
-                  {/* Top button - appears on hover */}
-                  <div className="absolute top-4 left-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 delay-75 z-20 pointer-events-auto">
-                    <span className="text-white text-sm font-medium bg-white/20 px-3 py-1 rounded-full backdrop-blur-sm">
-                      View Gallery →
-                    </span>
+                    <div className="absolute top-4 right-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 delay-75">
+                      <span className="text-white text-xs font-medium bg-purple-600 px-3 py-1 rounded-full">
+                        View →
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
+
+          {filteredModels.length === 0 && (
+            <p className="text-center text-gray-400 mt-10">No models found</p>
+          )}
         </div>
+      </section>
 
-        {filteredModels.length === 0 && (
-          <p className="text-center text-gray-400 mt-10">No models found</p>
-        )}
+      {/* CTA Section */}
+      <section className="py-20 px-4">
+        <div className="max-w-4xl mx-auto text-center">
+          <div className="bg-gradient-to-r from-purple-900/30 to-pink-900/30 border-purple-500/30 rounded-2xl p-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to Work With Us?</h2>
+            <p className="text-gray-300 mb-8">Book our studio or join our talent network today</p>
+            <div className="flex gap-4 justify-center flex-wrap">
+              <Link
+                to="/contact"
+                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 px-8 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg shadow-purple-500/30"
+              >
+                Book Studio
+              </Link>
+              <Link
+                to="/about"
+                className="border border-gray-700 hover:border-purple-500 px-8 py-3 rounded-lg font-semibold transition-colors"
+              >
+                Learn More
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
 
-        {/* Gallery Modal - unchanged */}
-        {selectedModel && allImages.length > 0 && (
-          <div
-            className="fixed inset-0 bg-black bg-opacity-95 flex items-center justify-center z-50 p-4"
-            onClick={() => setSelectedModel(null)}
-          >
-            <div
-              className="relative flex-col items-center max-w-5xl w-full"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="relative w-full flex items-center justify-center">
-                <img
-                  src={allImages[photoIndex]?.image}
-                  alt={`${selectedModel.name} ${photoIndex + 1}`}
-                  className="max-w-full max-h- object-contain"
-                />
+      {/* Gallery Modal */}
+      {selectedModel && allImages.length > 0 && (
+        <div
+          className="fixed inset-0 bg-black/95 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          onClick={() => setSelectedModel(null)}
+        >
+          <div className="relative max-w-5xl w-full" onClick={(e) => e.stopPropagation()}>
+            <div className="relative w-full flex items-center justify-center">
+              <img
+                src={allImages[photoIndex]?.image}
+                alt={`${selectedModel.name} ${photoIndex + 1}`}
+                className="max-w-full max-h-[80vh] object-contain rounded-lg"
+              />
 
-                <div className="absolute top-4 right-4 text-white text-sm font-semibold bg-black bg-opacity-70 px-3 py-1 rounded-full backdrop-blur-sm">
-                  {photoIndex + 1} / {allImages.length}
-                </div>
-
-                {allImages.length > 1 && (
-                  <>
-                    <button onClick={prevPhoto} className="absolute left-4 text-white text-5xl hover:text-gray-300 px-4 py-8 bg-black bg-opacity-30 hover:bg-opacity-50 rounded-full transition select-none">‹</button>
-                    <button onClick={nextPhoto} className="absolute right-4 text-white text-5xl hover:text-gray-300 px-4 py-8 bg-black bg-opacity-30 hover:bg-opacity-50 rounded-full transition select-none">›</button>
-                  </>
-                )}
-
-                <button className="absolute -top-10 right-0 text-white text-4xl hover:text-gray-300" onClick={() => setSelectedModel(null)}>×</button>
+              <div className="absolute top-4 right-4 text-white text-sm font-semibold bg-black/70 px-3 py-1 rounded-full backdrop-blur-sm">
+                {photoIndex + 1} / {allImages.length}
               </div>
 
               {allImages.length > 1 && (
-                <div className="flex gap-2 mt-4 overflow-x-auto max-w-full p-2 w-full justify-center">
-                  {allImages.map((img, idx) => (
-                    <button
-                      key={img.id}
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setPhotoIndex(idx);
-                      }}
-                      className={`w-16 h-16 flex-shrink-0 border-2 rounded overflow-hidden ${
-                        idx === photoIndex? 'border-blue-500 scale-110' : 'border-gray-600 hover:border-gray-300'
-                      } transition-all`}
-                    >
-                      <img src={img.image} alt={`thumb ${idx}`} className="w-full h-full object-cover pointer-events-none" />
-                    </button>
-                  ))}
-                </div>
+                <>
+                  <button onClick={prevPhoto} className="absolute left-4 text-white text-5xl hover:text-purple-400 px-4 py-8 bg-black/30 hover:bg-black/50 rounded-full transition select-none">‹</button>
+                  <button onClick={nextPhoto} className="absolute right-4 text-white text-5xl hover:text-purple-400 px-4 py-8 bg-black/30 hover:bg-black/50 rounded-full transition select-none">›</button>
+                </>
               )}
 
-              <div className="mt-4 text-white text-center px-4">
-                <h3 className="text-2xl font-bold mb-2">{selectedModel.name}</h3>
-                <p className="text-sm text-gray-300 whitespace-pre-line max-w-2xl mx-auto">{selectedModel.profile}</p>
+              <button className="absolute -top-12 right-0 text-white text-4xl hover:text-purple-400" onClick={() => setSelectedModel(null)}>×</button>
+            </div>
+
+            {allImages.length > 1 && (
+              <div className="flex gap-2 mt-4 overflow-x-auto max-w-full p-2 justify-center">
+                {allImages.map((img, idx) => (
+                  <button
+                    key={img.id}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setPhotoIndex(idx);
+                    }}
+                    className={`w-16 h-16 flex-shrink-0 border-2 rounded overflow-hidden ${
+                      idx === photoIndex? 'border-purple-500 scale-110' : 'border-gray-700 hover:border-gray-500'
+                    } transition-all`}
+                  >
+                    <img src={img.image} alt={`thumb ${idx}`} className="w-full h-full object-cover" />
+                  </button>
+                ))}
               </div>
+            )}
+
+            <div className="mt-4 text-white text-center px-4">
+              <h3 className="text-2xl font-bold mb-2">{selectedModel.name}</h3>
+              <p className="text-sm text-gray-300 whitespace-pre-line max-w-2xl mx-auto">{selectedModel.profile}</p>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
 
-export default PhotoGallery;
+export default Home;
