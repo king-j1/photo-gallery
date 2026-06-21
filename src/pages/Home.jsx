@@ -21,12 +21,12 @@ function Home() {
 
   useEffect(() => {
     fetch(API_URL)
-   .then(res => res.json())
-   .then(data => {
+.then(res => res.json())
+.then(data => {
         setModels(data);
         setLoading(false);
       })
-   .catch(err => {
+.catch(err => {
         console.log("API error:", err);
         setLoading(false);
       });
@@ -94,7 +94,7 @@ function Home() {
   return (
     <div className="min-h-screen bg-black text-white">
 
-      {/* Landscape Ad Slider - Full Width */}
+      {/* Landscape Ad Slider - Full Width with transition */}
       <section className="relative w-full h-[70vh] max-h-[600px] overflow-hidden">
         {adSlides.map((img, idx) => (
           <div
@@ -141,6 +141,7 @@ function Home() {
             />
           </div>
 
+          {/* CARD GRID - NO CROP, AUTO HEIGHT */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {filteredModels.map((model) => {
               const imgs = getAllImages(model);
@@ -152,15 +153,17 @@ function Home() {
                   className="group relative bg-gray-900 rounded-xl overflow-hidden hover:shadow-2xl hover:shadow-purple-500/20 transition-all duration-300 cursor-pointer border-gray-800 hover:border-purple-500"
                   onClick={() => openGallery(model, 0)}
                 >
-                  <div className="relative h-80">
+                  {/* IMAGE WRAPPER - height auto, width 100% */}
+                  <div className="relative w-full overflow-hidden">
                     {cover? (
                       <img
                         src={cover}
                         alt={model.name}
-                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                        className="w-full h-auto object-cover object-top transition-transform duration-300 group-hover:scale-105"
+                        style={{ aspectRatio: '3/4' }}
                       />
                     ) : (
-                      <div className="w-full h-full bg-gray-800 flex items-center justify-center text-gray-400">No image</div>
+                      <div className="w-full aspect-[3/4] bg-gray-800 flex items-center justify-center text-gray-400">No image</div>
                     )}
 
                     <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
