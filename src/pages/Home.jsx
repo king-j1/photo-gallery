@@ -21,12 +21,12 @@ function Home() {
 
   useEffect(() => {
     fetch(API_URL)
-.then(res => res.json())
-.then(data => {
+     .then(res => res.json())
+     .then(data => {
         setModels(data);
         setLoading(false);
       })
-.catch(err => {
+     .catch(err => {
         console.log("API error:", err);
         setLoading(false);
       });
@@ -214,18 +214,31 @@ function Home() {
         </div>
       </section>
 
-      {/* Gallery Modal */}
+      {/* Gallery Modal - FIXED: Now scrollable */}
       {selectedModel && allImages.length > 0 && (
         <div
-          className="fixed inset-0 bg-black/95 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          className="fixed inset-0 bg-black/95 backdrop-blur-sm z-50 overflow-y-auto p-4"
           onClick={() => setSelectedModel(null)}
         >
-          <div className="relative max-w-5xl w-full" onClick={(e) => e.stopPropagation()}>
-            <div className="relative w-full flex items-center justify-center">
+          <div
+            className="relative max-w-5xl w-full mx-auto my-8"
+            onClick={(e) => e.stopPropagation()}
+          >
+
+            {/* Close button - fixed so it stays visible */}
+            <button
+              className="fixed top-4 right-4 text-white text-4xl hover:text-purple-400 z-10"
+              onClick={() => setSelectedModel(null)}
+            >
+              ×
+            </button>
+
+            {/* Image */}
+            <div className="relative w-full flex items-center justify-center mb-4">
               <img
                 src={allImages[photoIndex]?.image}
                 alt={`${selectedModel.name} ${photoIndex + 1}`}
-                className="max-w-full max-h-[80vh] object-contain rounded-lg"
+                className="max-w-full max-h-[70vh] object-contain rounded-lg"
               />
 
               <div className="absolute top-4 right-4 text-white text-sm font-semibold bg-black/70 px-3 py-1 rounded-full backdrop-blur-sm">
@@ -238,12 +251,11 @@ function Home() {
                   <button onClick={nextPhoto} className="absolute right-4 text-white text-5xl hover:text-purple-400 px-4 py-8 bg-black/30 hover:bg-black/50 rounded-full transition select-none">›</button>
                 </>
               )}
-
-              <button className="absolute -top-12 right-0 text-white text-4xl hover:text-purple-400" onClick={() => setSelectedModel(null)}>×</button>
             </div>
 
+            {/* Thumbnails */}
             {allImages.length > 1 && (
-              <div className="flex gap-2 mt-4 overflow-x-auto max-w-full p-2 justify-center">
+              <div className="flex gap-2 mb-6 overflow-x-auto max-w-full p-2 justify-center">
                 {allImages.map((img, idx) => (
                   <button
                     key={img.id}
@@ -261,9 +273,12 @@ function Home() {
               </div>
             )}
 
-            <div className="mt-4 text-white text-center px-4">
+            {/* Text - now scrolls with the page */}
+            <div className="text-white text-center pb-12">
               <h3 className="text-2xl font-bold mb-2">{selectedModel.name}</h3>
-              <p className="text-sm text-gray-300 whitespace-pre-line max-w-2xl mx-auto">{selectedModel.profile}</p>
+              <p className="text-sm text-gray-300 whitespace-pre-line max-w-2xl mx-auto">
+                {selectedModel.profile}
+              </p>
             </div>
           </div>
         </div>
