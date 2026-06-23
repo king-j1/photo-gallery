@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 
 function Home() {
@@ -8,6 +8,14 @@ function Home() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [slideIndex, setSlideIndex] = useState(0);
+  const [zoom, setZoom] = useState(1);
+
+  // pan/drag states
+  const [panX, setPanX] = useState(0);
+  const [panY, setPanY] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startPos, setStartPos] = useState({ x: 0, y: 0 });
+  const imgContainerRef = useRef(null);
 
   const API_URL = "http://127.0.0.1:8000/api/models/";
 
@@ -19,17 +27,29 @@ function Home() {
     "https://images.unsplash.com/photo-1452780212940-6f5c0d14d848?q=80&w=2070&auto=format&fit=crop"
   ];
 
-  useEffect(() => {
+  // fetch function we can reuse
+  const fetchModels = () => {
     fetch(API_URL)
-     .then(res => res.json())
-     .then(data => {
+.then(res => res.json())
+.then(data => {
         setModels(data);
         setLoading(false);
       })
-     .catch(err => {
+.catch(err => {
         console.log("API error:", err);
         setLoading(false);
       });
+  };
+
+  // Initial load
+  useEffect(() => {
+    fetchModels();
+  }, []);
+
+  // Auto refresh every 10 seconds so new photos appear
+  useEffect(() => {
+    const refreshTimer = setInterval(fetchModels, 10000);
+    return () => clearInterval(refreshTimer);
   }, []);
 
   // Auto transition ad slides every 5s
@@ -55,6 +75,15 @@ function Home() {
   const openGallery = (model, index = 0) => {
     setSelectedModel(model);
     setPhotoIndex(index);
+    setZoom(1);
+    setPanX(0);
+    setPanY(0);
+  };
+
+  // close gallery + refresh data immediately
+  const closeGallery = () => {
+    setSelectedModel(null);
+    fetchModels();
   };
 
   const allImages = getAllImages(selectedModel);
@@ -62,11 +91,80 @@ function Home() {
   const nextPhoto = () => {
     if (!allImages.length) return;
     setPhotoIndex((prev) => (prev + 1) % allImages.length);
+    setZoom(1);
+    setPanX(0);
+    setPanY(0);
   };
 
   const prevPhoto = () => {
     if (!allImages.length) return;
     setPhotoIndex((prev) => (prev - 1 + allImages.length) % allImages.length);
+    setZoom(1);
+    setPanX(0);
+    setPanY(0);
+  };
+
+  // zoom functions
+  const zoomIn = () => setZoom(prev => Math.min(prev + 0.5, 3));
+  const zoomOut = () => {
+    setZoom(prev => {
+      const newZoom = Math.max(prev - 0.5, 1);
+      if (newZoom === 1) {
+        setPanX(0);
+        setPanY(0);
+      }
+      return newZoom;
+    });
+  };
+
+  // double click to zoom
+  const handleDoubleClick = () => {
+    setZoom(prev => {
+      const newZoom = prev === 1? 2 : 1;
+      if (newZoom === 1) {
+        setPanX(0);
+        setPanY(0);
+      }
+      return newZoom;
+    });
+  };
+
+  // drag to pan when zoomed
+  const handleMouseDown = (e) => {
+    if (zoom <= 1) return;
+    e.preventDefault();
+    setIsDragging(true);
+    setStartPos({ x: e.clientX - panX, y: e.clientY - panY });
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDragging || zoom <= 1) return;
+    e.preventDefault();
+    setPanX(e.clientX - startPos.x);
+    setPanY(e.clientY - startPos.y);
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  // Touch events for mobile
+  const handleTouchStart = (e) => {
+    if (zoom <= 1) return;
+    const touch = e.touches[0];
+    setIsDragging(true);
+    setStartPos({ x: touch.clientX - panX, y: touch.clientY - panY });
+  };
+
+  const handleTouchMove = (e) => {
+    if (!isDragging || zoom <= 1) return;
+    const touch = e.touches[0];
+    setPanX(touch.clientX - startPos.x);
+    setPanY(touch.clientY - startPos.y);
+  };
+
+  const handleTouchEnd = () => {
+    setIsDragging(false);
   };
 
   useEffect(() => {
@@ -74,11 +172,13 @@ function Home() {
       if (!selectedModel) return;
       if (e.key === 'ArrowRight') nextPhoto();
       if (e.key === 'ArrowLeft') prevPhoto();
-      if (e.key === 'Escape') setSelectedModel(null);
+      if (e.key === 'Escape') closeGallery();
+      if (e.key === '+' || e.key === '=') zoomIn();
+      if (e.key === '-') zoomOut();
     };
     window.addEventListener('keydown', handleKey);
     return () => window.removeEventListener('keydown', handleKey);
-  }, [selectedModel, photoIndex]);
+  }, [selectedModel, photoIndex, zoom]);
 
   if (loading) {
     return (
@@ -94,7 +194,7 @@ function Home() {
   return (
     <div className="min-h-screen bg-black text-white">
 
-      {/* Landscape Ad Slider - Full Width with transition */}
+      {/* Landscape Ad Slider - FIXED: h-[70vh] back */}
       <section className="relative w-full h-[70vh] max-h-[600px] overflow-hidden">
         {adSlides.map((img, idx) => (
           <div
@@ -214,34 +314,67 @@ function Home() {
         </div>
       </section>
 
-      {/* Gallery Modal - FIXED: Now scrollable */}
+      {/* Gallery Modal - HEAD TOE STANDARD VIEW */}
       {selectedModel && allImages.length > 0 && (
         <div
           className="fixed inset-0 bg-black/95 backdrop-blur-sm z-50 overflow-y-auto p-4"
-          onClick={() => setSelectedModel(null)}
+          onClick={closeGallery}
         >
           <div
             className="relative max-w-5xl w-full mx-auto my-8"
             onClick={(e) => e.stopPropagation()}
           >
 
-            {/* Close button - fixed so it stays visible */}
+            {/* Close button */}
             <button
               className="fixed top-4 right-4 text-white text-4xl hover:text-purple-400 z-10"
-              onClick={() => setSelectedModel(null)}
+              onClick={closeGallery}
             >
               ×
             </button>
 
-            {/* Image */}
-            <div className="relative w-full flex items-center justify-center mb-4">
+            {/* Zoom Controls */}
+            <div className="fixed top-4 left-4 flex gap-2 z-10">
+              <button
+                onClick={(e) => { e.stopPropagation(); zoomOut(); }}
+                className="bg-black/70 hover:bg-black/90 text-white w-10 h-10 rounded-full text-xl font-bold backdrop-blur-sm"
+              >
+                -
+              </button>
+              <button
+                onClick={(e) => { e.stopPropagation(); zoomIn(); }}
+                className="bg-black/70 hover:bg-black/90 text-white w-10 h-10 rounded-full text-xl font-bold backdrop-blur-sm"
+              >
+                +
+              </button>
+            </div>
+
+            {/* Image - STANDARD: h-90vh shows head to toe */}
+            <div
+              ref={imgContainerRef}
+              className="relative w-full h- bg-black flex items-center justify-center mb-4 overflow-auto rounded-lg"
+              onMouseDown={handleMouseDown}
+              onMouseMove={handleMouseMove}
+              onMouseUp={handleMouseUp}
+              onMouseLeave={handleMouseUp}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+              style={{ cursor: zoom > 1? (isDragging? 'grabbing' : 'grab') : 'zoom-in' }}
+            >
               <img
                 src={allImages[photoIndex]?.image}
                 alt={`${selectedModel.name} ${photoIndex + 1}`}
-                className="max-w-full max-h-[70vh] object-contain rounded-lg"
+                onDoubleClick={handleDoubleClick}
+                className="max-h-full w-auto object-contain rounded-lg transition-transform duration-100 select-none"
+                style={{
+                  transform: `scale(${zoom}) translate(${panX / zoom}px, ${panY / zoom}px)`,
+                  transformOrigin: 'center center'
+                }}
+                draggable={false}
               />
 
-              <div className="absolute top-4 right-4 text-white text-sm font-semibold bg-black/70 px-3 py-1 rounded-full backdrop-blur-sm">
+              <div className="absolute top-4 right-20 text-white text-sm font-semibold bg-black/70 px-3 py-1 rounded-full backdrop-blur-sm">
                 {photoIndex + 1} / {allImages.length}
               </div>
 
@@ -262,6 +395,9 @@ function Home() {
                     onClick={(e) => {
                       e.stopPropagation();
                       setPhotoIndex(idx);
+                      setZoom(1);
+                      setPanX(0);
+                      setPanY(0);
                     }}
                     className={`w-16 h-16 flex-shrink-0 border-2 rounded overflow-hidden ${
                       idx === photoIndex? 'border-purple-500 scale-110' : 'border-gray-700 hover:border-gray-500'
@@ -273,7 +409,7 @@ function Home() {
               </div>
             )}
 
-            {/* Text - now scrolls with the page */}
+            {/* Text */}
             <div className="text-white text-center pb-12">
               <h3 className="text-2xl font-bold mb-2">{selectedModel.name}</h3>
               <p className="text-sm text-gray-300 whitespace-pre-line max-w-2xl mx-auto">

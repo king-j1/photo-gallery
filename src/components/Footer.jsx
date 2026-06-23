@@ -102,7 +102,7 @@ function Footer() {
         {/* Bottom Bar */}
         <div className="border-t border-gray-800 mt-12 pt-8 text-center">
           <p className="text-gray-500 text-sm">
-            © 2026 PhotoGallery. All rights reserved. Built with ❤️ in Accra
+            © 2026 PhotoGallery. All rights reserved. Built with ❤️ in Accra by Vasco Galley 
           </p>
         </div>
       </div>
