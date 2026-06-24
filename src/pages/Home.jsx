@@ -5,7 +5,7 @@ function Home() {
   const [models, setModels] = useState([]);
   const [selectedModel, setSelectedModel] = useState(null);
   const [photoIndex, setPhotoIndex] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false); // changed to false
   const [search, setSearch] = useState('');
   const [slideIndex, setSlideIndex] = useState(0);
   const [zoom, setZoom] = useState(1);
@@ -17,12 +17,40 @@ function Home() {
   const [startPos, setStartPos] = useState({ x: 0, y: 0 });
   const imgContainerRef = useRef(null);
 
+  // API CODE COMMENTED OUT - no backend needed for now
+  // const API_URL = `${import.meta.env.VITE_API_URL}/api/models/`;
+  // console.log("API URL used:", import.meta.env.VITE_API_URL)
 
-  const API_URL = `${import.meta.env.VITE_API_URL}/api/models/`;
-  console.log("API URL used:", import.meta.env.VITE_API_URL)
-
-
- 
+  // STATIC MODELS DATA - replace with your real photos
+  // Put images in /public/photos/ folder and use paths like "/photos/model1.jpg"
+  const staticModels = [
+    {
+      id: 1,
+      name: "Queen",
+      profile: "Professional model. Available for fashion and commercial shoots.",
+      main_image: "/photos/afr6.avif", // put queen1.jpg in public/photos/
+      photos: [
+        { id: 2, image: "/photos/afr.webp" },
+        { id: 3, image: "/photos/afr3.webp" }
+      ]
+    },
+    {
+      id: 2,
+      name: "Diana",
+      profile: "Runway and editorial model based in Accra.",
+      main_image: "/photos/diana1.jpg",
+      photos: [
+        { id: 4, image: "/photos/afr4.webp" }
+      ]
+    },
+    {
+      id: 3,
+      name: "Ama",
+      profile: "Commercial and lifestyle model.",
+      main_image: "/photos/afr5.webp",
+      photos: []
+    }
+  ];
 
   // 4 landscape ad images - replace with your studio photos later
   const adSlides = [
@@ -32,30 +60,31 @@ function Home() {
     "https://images.unsplash.com/photo-1452780212940-6f5c0d14d848?q=80&w=2070&auto=format&fit=crop"
   ];
 
-  // fetch function we can reuse
-  const fetchModels = () => {
-    fetch(API_URL)
-.then(res => res.json())
-.then(data => {
-        setModels(data);
-        setLoading(false);
-      })
-.catch(err => {
-        console.log("API error:", err);
-        setLoading(false);
-      });
-  };
+  // API fetch function COMMENTED OUT
+  // const fetchModels = () => {
+  // fetch(API_URL)
+  //.then(res => res.json())
+  //.then(data => {
+  // setModels(data);
+  // setLoading(false);
+  // })
+  //.catch(err => {
+  // console.log("API error:", err);
+  // setLoading(false);
+  // });
+  // };
 
-  // Initial load
+  // Initial load - load static data instead
   useEffect(() => {
-    fetchModels();
+    setModels(staticModels);
+    setLoading(false);
   }, []);
 
-  // Auto refresh every 10 seconds so new photos appear
-  useEffect(() => {
-    const refreshTimer = setInterval(fetchModels, 10000);
-    return () => clearInterval(refreshTimer);
-  }, []);
+  // Auto refresh COMMENTED OUT - no API to refresh
+  // useEffect(() => {
+  // const refreshTimer = setInterval(fetchModels, 10000);
+  // return () => clearInterval(refreshTimer);
+  // }, []);
 
   // Auto transition ad slides every 5s
   useEffect(() => {
@@ -85,10 +114,10 @@ function Home() {
     setPanY(0);
   };
 
-  // close gallery + refresh data immediately
+  // close gallery - no API refresh
   const closeGallery = () => {
     setSelectedModel(null);
-    fetchModels();
+    // fetchModels(); // commented out
   };
 
   const allImages = getAllImages(selectedModel);
