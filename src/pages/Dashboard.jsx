@@ -9,76 +9,108 @@ function Dashboard() {
   const [showEdit, setShowEdit] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [formData, setFormData] = useState({})
-  const [avatarFile, setAvatarFile] = useState(null)
+  const [avatarPreview, setAvatarPreview] = useState(null)
 
+  // Load user + messages from localStorage instead of API
   useEffect(() => {
-    fetchDashboard()
-  }, [navigate])
+    const savedUser = localStorage.getItem('demo_user')
+    const savedMessages = localStorage.getItem('demo_messages')
 
-  const fetchDashboard = () => {
-    const token = localStorage.getItem('access_token')
-    if (!token) return navigate('/login')
+    // Create demo user if none exists
+    const defaultUser = savedUser? JSON.parse(savedUser) : {
+      first_name: "Demo",
+      last_name: "User",
+      username: "demouser",
+      email: "demo@example.com",
+      phone: "+233 24 000 0000",
+      avatar: null
+    }
 
-    fetch('http://127.0.0.1:8000/api/dashboard/', {
-      headers: { 'Authorization': `Bearer ${token}` }
+    // Demo messages
+    const defaultMessages = savedMessages? JSON.parse(savedMessages) : [
+      {
+        id: 1,
+        inquiry_type_display: "Booking Inquiry",
+        message: "Hi, I'd like to book Queen for a photoshoot next week.",
+        admin_reply: "Thanks! We'll get back to you within 24 hours.",
+        created_at: new Date().toISOString()
+      },
+      {
+        id: 2,
+        inquiry_type_display: "General Question",
+        message: "Do you work with commercial brands?",
+        admin_reply: null,
+        created_at: new Date(Date.now() - 86400000).toISOString()
+      }
+    ]
+
+    setUser(defaultUser)
+    setMessages(defaultMessages)
+    setFormData({
+      first_name: defaultUser.first_name,
+      last_name: defaultUser.last_name,
+      email: defaultUser.email,
+      phone: defaultUser.phone
     })
-  .then(res => res.ok? res.json() : Promise.reject('Session expired'))
-  .then(data => {
-      setUser(data.user)
-      setMessages(data.messages)
-      setFormData({
-        first_name: data.user.first_name,
-        last_name: data.user.last_name,
-        email: data.user.email,
-        phone: data.user.phone
-      })
-      setLoading(false)
-    })
-  .catch(() => {
-      localStorage.clear()
-      navigate('/login')
-    })
+    setAvatarPreview(defaultUser.avatar)
+    setLoading(false)
+  }, [])
+
+  // Save to localStorage whenever user changes
+  const saveUser = (newUser) => {
+    setUser(newUser)
+    localStorage.setItem('demo_user', JSON.stringify(newUser))
   }
 
-  const handleUpdate = async (e) => {
+  const saveMessages = (newMessages) => {
+    setMessages(newMessages)
+    localStorage.setItem('demo_messages', JSON.stringify(newMessages))
+  }
+
+  // Handle avatar upload - converts to base64
+  const handleAvatarChange = (e) => {
+    const file = e.target.files[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setAvatarPreview(reader.result)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  // UPDATE - no API, just localStorage
+  const handleUpdate = (e) => {
     e.preventDefault()
-    const token = localStorage.getItem('access_token')
-    const formDataToSend = new FormData()
-
-    Object.keys(formData).forEach(key => formDataToSend.append(key, formData[key]))
-    if (avatarFile) formDataToSend.append('avatar', avatarFile)
-
-    const res = await fetch('http://127.0.0.1:8000/api/update-profile/', {
-      method: 'PUT',
-      headers: { 'Authorization': `Bearer ${token}` },
-      body: formDataToSend
-    })
-
-    if (res.ok) {
-      setShowEdit(false)
-      fetchDashboard()
+    const updatedUser = {
+     ...user,
+     ...formData,
+      avatar: avatarPreview
     }
+    saveUser(updatedUser)
+    setShowEdit(false)
+    alert('Profile updated! Saved locally.')
   }
 
-  const handleDelete = async () => {
-    const token = localStorage.getItem('access_token')
-    const res = await fetch('http://127.0.0.1:8000/api/delete-account/', {
-      method: 'DELETE',
-      headers: { 'Authorization': `Bearer ${token}` }
-    })
-
-    if (res.ok) {
-      localStorage.clear()
-      navigate('/signup')
-    }
+  // DELETE - clear localStorage
+  const handleDelete = () => {
+    localStorage.removeItem('demo_user')
+    localStorage.removeItem('demo_messages')
+    alert('Account deleted locally')
+    navigate('/signup')
   }
 
+  // LOGOUT - just clear token if you had one
   const handleLogout = () => {
     localStorage.clear()
     navigate('/login')
   }
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0f0c29] via-[#302b63] to-[#24243e]"><div className="text-white text-xl animate-pulse">Loading...</div></div>
+  if (loading) return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0f0c29] via-[#302b63] to-[#24243e]">
+      <div className="text-white text-xl animate-pulse">Loading...</div>
+    </div>
+  )
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-[#0f0c29] via-[#302b63] to-[#24243e] p-4 md:p-8">
@@ -95,7 +127,7 @@ function Dashboard() {
         <div className="bg-white/10 backdrop-blur-xl border-white/20 rounded-3xl shadow-[0_8px_32px_0_rgba(31,38,135,0.37)] p-6 md:p-8 mb-6">
           <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
             {user?.avatar? (
-              <img src={`http://127.0.0.1:8000${user.avatar}`} alt="avatar" className="w-24 h-24 rounded-full object-cover border-2 border-purple-500" />
+              <img src={user.avatar} alt="avatar" className="w-24 h-24 rounded-full object-cover border-2 border-purple-500" />
             ) : (
               <div className="w-24 h-24 rounded-full bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center text-white text-3xl font-bold">
                 {user?.first_name?.[0]}{user?.last_name?.[0]}
@@ -148,11 +180,12 @@ function Dashboard() {
           <div className="bg-white/10 backdrop-blur-xl border-white/20 rounded-3xl p-8 w-full max-w-md">
             <h3 className="text-2xl font-bold text-white mb-6">Edit Profile</h3>
             <form onSubmit={handleUpdate} className="space-y-4">
-              <input type="text" placeholder="First Name" value={formData.first_name} onChange={e => setFormData({...formData, first_name: e.target.value})} className="w-full bg-white/5 border-white/20 rounded-xl px-4 py-3 text-white" />
-              <input type="text" placeholder="Last Name" value={formData.last_name} onChange={e => setFormData({...formData, last_name: e.target.value})} className="w-full bg-white/5 border-white/20 rounded-xl px-4 py-3 text-white" />
-              <input type="email" placeholder="Email" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} className="w-full bg-white/5 border-white/20 rounded-xl px-4 py-3 text-white" />
+              <input type="text" placeholder="First Name" value={formData.first_name} onChange={e => setFormData({...formData, first_name: e.target.value})} className="w-full bg-white/5 border-white/20 rounded-xl px-4 py-3 text-white" required />
+              <input type="text" placeholder="Last Name" value={formData.last_name} onChange={e => setFormData({...formData, last_name: e.target.value})} className="w-full bg-white/5 border-white/20 rounded-xl px-4 py-3 text-white" required />
+              <input type="email" placeholder="Email" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} className="w-full bg-white/5 border-white/20 rounded-xl px-4 py-3 text-white" required />
               <input type="tel" placeholder="Phone" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} className="w-full bg-white/5 border-white/20 rounded-xl px-4 py-3 text-white" />
-              <input type="file" accept="image/*" onChange={e => setAvatarFile(e.target.files[0])} className="w-full text-white/60 text-sm" />
+              <input type="file" accept="image/*" onChange={handleAvatarChange} className="w-full text-white/60 text-sm" />
+              {avatarPreview && <img src={avatarPreview} alt="preview" className="w-16 h-16 rounded-full object-cover mx-auto" />}
 
               <div className="flex gap-3">
                 <button type="submit" className="flex-1 bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-xl">Save</button>
@@ -168,7 +201,7 @@ function Dashboard() {
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white/10 backdrop-blur-xl border-white/20 rounded-3xl p-8 w-full max-w-md">
             <h3 className="text-2xl font-bold text-red-400 mb-4">Delete Account?</h3>
-            <p className="text-white/70 mb-6">This will permanently delete your account and all messages. This action cannot be undone.</p>
+            <p className="text-white/70 mb-6">This will clear your profile data from this browser. This action cannot be undone.</p>
             <div className="flex gap-3">
               <button onClick={handleDelete} className="flex-1 bg-red-600 hover:bg-red-700 text-white py-3 rounded-xl">Yes, Delete</button>
               <button onClick={() => setShowDeleteConfirm(false)} className="flex-1 bg-white/10 hover:bg-white/20 text-white py-3 rounded-xl">Cancel</button>
@@ -182,8 +215,8 @@ function Dashboard() {
           0%, 100% { transform: translate(0, 0) scale(1); }
           50% { transform: translate(30px, 30px) scale(1.1); }
         }
-      .animate-float { animation: float 20s infinite ease-in-out; }
-      .animate-float-delayed { animation: float 15s infinite ease-in-out reverse; }
+       .animate-float { animation: float 20s infinite ease-in-out; }
+       .animate-float-delayed { animation: float 15s infinite ease-in-out reverse; }
       `}</style>
     </div>
   )
