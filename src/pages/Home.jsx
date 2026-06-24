@@ -17,7 +17,12 @@ function Home() {
   const [startPos, setStartPos] = useState({ x: 0, y: 0 });
   const imgContainerRef = useRef(null);
 
+
   const API_URL = `${import.meta.env.VITE_API_URL}/api/models/`;
+  console.log("API URL used:", import.meta.env.VITE_API_URL)
+
+
+ 
 
   // 4 landscape ad images - replace with your studio photos later
   const adSlides = [
