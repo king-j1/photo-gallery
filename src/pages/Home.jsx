@@ -41,7 +41,56 @@ function Home() {
       profile: "Commercial and lifestyle model.",
       main_image: "/photos/afr5.webp",
       photos: []
+    },
+
+
+    {
+      id: 3,
+      name: "Ama",
+      profile: "Commercial and lifestyle model.",
+      main_image: "/photos/afr5.webp",
+      photos: []
+    },
+     {
+      id: 1,
+      name: "Queen",
+      profile: "Professional model. Available for fashion and commercial shoots.",
+      main_image: "/photos/afr6.avif",
+      photos: [
+        { id: 2, image: "/photos/afr.webp" },
+        { id: 3, image: "/photos/afr3.webp" }
+      ]
+    },
+    {
+      id: 2,
+      name: "Diana",
+      profile: "Runway and editorial model based in Accra.",
+      main_image: "/photos/diana1.jpg",
+      photos: [
+        { id: 4, image: "/photos/afr4.webp" }
+      ]
+    },
+    {
+      id: 3,
+      name: "Ama",
+      profile: "Commercial and lifestyle model.",
+      main_image: "/photos/afr5.webp",
+      photos: []
+    },
+
+
+    {
+      id: 3,
+      name: "Ama",
+      profile: "Commercial and lifestyle model.",
+      main_image: "/photos/afr5.webp",
+      photos: []
     }
+
+
+
+
+
   ];
 
   const adSlides = [
