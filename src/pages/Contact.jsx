@@ -2,92 +2,59 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 function Contact() {
-  // useState = React hook to store form data in component memory
-  // formData = object holding all input values
-  // setFormData = function to update formData
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     phone: '',
-    inquiry_type: 'booking', // FIX: Changed from 'type' to 'inquiry_type' to match Django model field
+    inquiry_type: 'booking',
     message: ''
   });
   
-  // submitted = track if form was sent successfully
-  // used to show success message instead of form
   const [submitted, setSubmitted] = useState(false);
-  
-  // loading = prevent double-clicks while sending to server
   const [loading, setLoading] = useState(false);
 
-  // handleChange = runs every time user types in input
-  // e = event object from input
-  // ...formData = spread operator keeps other fields unchanged
-  // [e.target.name] = dynamic key. 'name', 'email', etc based on input name attribute
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // handleSubmit = runs when user clicks "Send Message" button
-  // async = allows using await for API calls
-  // e.preventDefault() = stop browser from reloading page on form submit
-  const handleSubmit = async (e) => {
+  // STATIC SUBMIT - no API call
+  const handleSubmit = (e) => {
     e.preventDefault();
-    setLoading(true); // Show loading state, disable button
+    setLoading(true);
     
-    try {
-      // fetch = browser API to send HTTP request to Django backend
-      // 'http://127.0.0.1:8000/api/contact/' = Django API endpoint from urls.py
-      const res = await fetch('http://127.0.0.1:8000/api/contact/', {
-        method: 'POST', // POST = create new data in database
-        headers: {
-          'Content-Type': 'application/json' // Tell Django we're sending JSON data
-        },
-        body: JSON.stringify(formData) // Convert JS object to JSON string
-      });
-      
-      // res.ok = true if HTTP status 200-299. Django returns 201 for created
-      if(res.ok) {
-        setSubmitted(true); // Show success message
-        setFormData({ name: '', email: '', phone: '', inquiry_type: 'booking', message: '' }); // Clear form
-      } else {
-        // If Django returns 400 error, log it for debugging
-        const errorData = await res.json();
-        console.error('Form error:', errorData);
-        alert('Error: ' + JSON.stringify(errorData));
+    // Fake "sending" delay so it feels real
+    setTimeout(() => {
+      // Save to localStorage as demo
+      const existingMessages = JSON.parse(localStorage.getItem('demo_contact_messages') || '[]')
+      const newMessage = {
+        ...formData,
+        id: Date.now(),
+        created_at: new Date().toISOString()
       }
-    } catch (error) {
-      // Catch network errors like Django server offline
-      console.error('Network error:', error);
-      alert('Network error. Is Django server running on port 8000?');
-    }
-    
-    setLoading(false); // Re-enable button
+      localStorage.setItem('demo_contact_messages', JSON.stringify([...existingMessages, newMessage]))
+      
+      setSubmitted(true);
+      setFormData({ name: '', email: '', phone: '', inquiry_type: 'booking', message: '' });
+      setLoading(false);
+    }, 1000);
   };
 
   return (
     <div className="min-h-screen bg-black text-white relative overflow-hidden">
-      
-      {/* Cinematic Background - full screen image with gradients */}
       <div className="absolute inset-0 z-0">
         <img
           src="https://images.unsplash.com/photo-1519638399535-1b036603ac77?q=80&w=2070&auto=format&fit=crop"
           alt="Studio background"
           className="w-full h-full object-cover"
         />
-        {/* Gradient overlays for readability */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/90"></div>
         <div className="absolute inset-0 bg-gradient-to-r from-purple-900/20 to-pink-900/20"></div>
       </div>
 
-      {/* Navbar Spacer - pushes content down so navbar doesn't overlap */}
       <div className="h-20"></div>
 
-      {/* Contact Content - relative z-10 puts it above background */}
       <div className="relative z-10 px-4 py-20">
         <div className="max-w-6xl mx-auto">
-          
-          {/* Header Section */}
           <div className="text-center mb-16">
             <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
               Let's Create Together
@@ -99,29 +66,25 @@ function Contact() {
           </div>
 
           <div className="grid lg:grid-cols-2 gap-12">
-            
-            {/* Contact Form - Glassmorphism card effect */}
             <div className="bg-white/5 backdrop-blur-xl border-white/10 rounded-3xl p-8 md:p-10 shadow-2xl">
               <h2 className="text-3xl font-bold mb-6">Send Us a Message</h2>
               
-              {/* Success message - only shows when submitted=true */}
               {submitted && (
-                <div className="bg-green-500/20 border-green-500/50 rounded-lg p-4 mb-6 animate-fade-in">
-                  <p className="text-green-400 font-semibold">✓ Message sent successfully!</p>
-                  <p className="text-sm text-gray-300 mt-1">We'll get back to you within 24 hours.</p>
+                <div className="bg-green-500/20 border-green-500/50 rounded-lg p-4 mb-6">
+                  <p className="text-green-400 font-semibold">✓ Message saved locally!</p>
+                  <p className="text-sm text-gray-300 mt-1">Demo mode: No backend needed. Check browser console to see saved data.</p>
                 </div>
               )}
 
-              {/* Form - onSubmit calls handleSubmit function */}
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">Full Name *</label>
                   <input
                     type="text"
-                    name="name" // Must match Django model field name
-                    value={formData.name} // Controlled input: value comes from state
-                    onChange={handleChange} // Update state on every keystroke
-                    required // HTML5 validation
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
                     className="w-full px-4 py-3 bg-white/5 border-white/10 rounded-lg focus:outline-none focus:border-purple-500 focus:bg-white/10 transition-all text-white placeholder-gray-500"
                     placeholder="John Doe"
                   />
@@ -132,7 +95,7 @@ function Contact() {
                     <label className="block text-sm font-medium text-gray-300 mb-2">Email *</label>
                     <input
                       type="email"
-                      name="email" // Must match Django model field name
+                      name="email"
                       value={formData.email}
                       onChange={handleChange}
                       required
@@ -144,10 +107,10 @@ function Contact() {
                     <label className="block text-sm font-medium text-gray-300 mb-2">Phone</label>
                     <input
                       type="tel"
-                      name="phone" // Must match Django model field name
+                      name="phone"
                       value={formData.phone}
                       onChange={handleChange}
-                      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-purple-500 focus:bg-white/10 transition-all text-white placeholder-gray-500"
+                      className="w-full px-4 py-3 bg-white/5 border-white/10 rounded-lg focus:outline-none focus:border-purple-500 focus:bg-white/10 transition-all text-white placeholder-gray-500"
                       placeholder="+233 XX XXXX"
                     />
                   </div>
@@ -156,13 +119,12 @@ function Contact() {
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">Inquiry Type *</label>
                   <select
-                    name="inquiry_type" // FIX: Changed from 'type' to 'inquiry_type' to match Django ContactMessage.inquiry_type field
+                    name="inquiry_type"
                     value={formData.inquiry_type}
                     onChange={handleChange}
                     required
                     className="w-full px-4 py-3 bg-white/5 border-white/10 rounded-lg focus:outline-none focus:border-purple-500 focus:bg-white/10 transition-all text-white"
                   >
-                    {/* option value must match Django INQUIRY_TYPES choices first value */}
                     <option value="booking" className="bg-gray-900">Book Studio Session</option>
                     <option value="talent" className="bg-gray-900">Join Talent Network</option>
                     <option value="commercial" className="bg-gray-900">Commercial Project</option>
@@ -174,30 +136,27 @@ function Contact() {
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">Message *</label>
                   <textarea
-                    name="message" // Must match Django model field name
+                    name="message"
                     value={formData.message}
                     onChange={handleChange}
                     required
                     rows="5"
                     className="w-full px-4 py-3 bg-white/5 border-white/10 rounded-lg focus:outline-none focus:border-purple-500 focus:bg-white/10 transition-all text-white placeholder-gray-500 resize-none"
-                    placeholder="Tell us about your project, preferred dates, or any questions..."
+                    placeholder="Tell us about your project..."
                   ></textarea>
                 </div>
 
                 <button
                   type="submit"
-                  disabled={loading} // Disable button while sending
+                  disabled={loading}
                   className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 py-4 rounded-lg font-semibold text-lg transition-all duration-300 shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {loading ? 'Sending...' : 'Send Message'} // Show loading text
+                  {loading ? 'Sending...' : 'Send Message'}
                 </button>
               </form>
             </div>
 
-            {/* Contact Info + Studio Image - right column */}
             <div className="space-y-8">
-              
-              {/* Studio Image */}
               <div className="relative rounded-3xl overflow-hidden h-64 lg:h-80">
                 <img
                   src="https://images.unsplash.com/photo-1542038784456-1ea8e935640e?q=80&w=2070&auto=format&fit=crop"
@@ -211,7 +170,6 @@ function Contact() {
                 </div>
               </div>
 
-              {/* Contact Details Card */}
               <div className="bg-white/5 backdrop-blur-xl border-white/10 rounded-3xl p-8 space-y-6">
                 <h3 className="text-2xl font-bold mb-4">Get in Touch Directly</h3>
                 
@@ -263,7 +221,6 @@ function Contact() {
                 </div>
               </div>
 
-              {/* Back to Home Link */}
               <Link 
                 to="/"
                 className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
