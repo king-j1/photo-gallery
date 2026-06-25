@@ -14,50 +14,44 @@ function Login() {
     setFormData({...formData, [e.target.name]: e.target.value})
   }
 
-  const handleSubmit = async (e) => {
+  // STATIC LOGIN - no API
+  const handleSubmit = (e) => {
     e.preventDefault()
     setError('')
     setLoading(true)
 
-    try {
-      const response = await fetch('http://127.0.0.1:8000/api/login/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      })
+    setTimeout(() => {
+      const savedUser = localStorage.getItem('demo_user')
 
-      const data = await response.json()
-
-      if (response.ok) {
-        localStorage.setItem('access_token', data.access)
-        localStorage.setItem('refresh_token', data.refresh)
-        localStorage.setItem('user', JSON.stringify(data.user))
-
-        navigate('/dashboard')
+      if (savedUser) {
+        const user = JSON.parse(savedUser)
+        // Simple check - in real app this would be JWT from Django
+        if (user.username === formData.username) {
+          localStorage.setItem('is_logged_in', 'true')
+          localStorage.setItem('access_token', 'demo_token_123') // fake token
+          navigate('/dashboard')
+        } else {
+          setError('Invalid username or password')
+        }
       } else {
-        setError(data.detail || 'Invalid username or password')
+        setError('No account found. Please sign up first.')
       }
-    } catch (err) {
-      setError('Connection error. Make sure Django server is running.')
-    } finally {
       setLoading(false)
-    }
+    }, 500)
   }
 
   return (
     <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-[#0f0c29] via-[#302b63] to-[#24243e] p-4">
 
-      {/* Animated background blobs */}
       <div className="absolute w-[500px] h-[500px] bg-purple-600/30 rounded-full blur-3xl -top-52 -left-52 animate-float"></div>
       <div className="absolute w-[400px] h-[400px] bg-cyan-500/30 rounded-full blur-3xl -bottom-40 -right-40 animate-float-delayed"></div>
 
-      {/* Glassmorphism Card */}
       <div className="relative z-10 w-full max-w-md bg-white/10 backdrop-blur-xl border-white/20 rounded-3xl shadow-[0_8px_32px_0_rgba(31,38,135,0.37)] p-8 md:p-10">
 
         <h1 className="text-3xl md:text-4xl font-bold text-white text-center mb-2 drop-shadow-[0_2px_10px_rgba(138,43,226,0.5)]">
           Welcome Back
         </h1>
-        <p className="text-white/70 text-center mb-8 text-sm">Login to your Talent Hub account</p>
+        <p className="text-white/70 text-center mb-8 text-sm">Demo mode - use any username from signup</p>
 
         {error && (
           <div className="bg-red-500/20 border-red-500/40 text-red-300 p-3 rounded-lg mb-4 text-sm">
@@ -105,16 +99,15 @@ function Login() {
         </p>
       </div>
 
-      {/* Custom animations */}
       <style jsx>{`
         @keyframes float {
           0%, 100% { transform: translate(0, 0) scale(1); }
           50% { transform: translate(30px, 30px) scale(1.1); }
         }
-       .animate-float {
+      .animate-float {
           animation: float 20s infinite ease-in-out;
         }
-       .animate-float-delayed {
+      .animate-float-delayed {
           animation: float 15s infinite ease-in-out reverse;
         }
       `}</style>
