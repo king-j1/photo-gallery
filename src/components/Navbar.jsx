@@ -19,7 +19,7 @@ function Navbar() {
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
             <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg"></div>
-            <span className="text-xl font-bold text-white">PhotoGallery</span>
+            <span className="text-xl font-bold text-white">Tugbe</span>
           </Link>
 
           {/* Desktop Links */}
