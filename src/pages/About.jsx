@@ -9,7 +9,7 @@ function About() {
         <div className="absolute inset-0 bg-gradient-to-b from-purple-900/20 to-black"></div>
         <div className="max-w-6xl mx-auto text-center relative z-10">
           <h1 className="text-5xl md:text-7xl font-bold mb-6">
-            About <span className="bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">PhotoGallery</span>
+            About <span className="bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">Tugbe</span>
           </h1>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto">
             Where creativity meets professionalism. We’re not just a photo platform — we’re a hub for models, photographers, and visual storytellers.
@@ -23,7 +23,7 @@ function About() {
           <div>
             <h2 className="text-3xl md:text-4xl font-bold mb-6">Our Story</h2>
             <p className="text-gray-300 mb-4 leading-relaxed">
-              Founded in 2024 in Accra, PhotoGallery started with one vision: to give creators a premium space to showcase their work.
+              Founded in 2024 in Accra, Tugbe started with one vision: to give creators a premium space to showcase their work.
               We’ve grown from a small studio idea to a global community connecting models and photographers.
             </p>
             <p className="text-gray-300 leading-relaxed">
@@ -129,7 +129,7 @@ function About() {
         <div className="max-w-4xl mx-auto text-center">
           <div className="bg-gradient-to-r from-purple-900/30 to-pink-900/30 border-purple-500/30 rounded-2xl p-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to Create With Us?</h2>
-            <p className="text-gray-300 mb-8">Join thousands of creators building their portfolio on PhotoGallery</p>
+            <p className="text-gray-300 mb-8">Join thousands of creators building their portfolio on Tugbe</p>
             <a
               href="/signup"
               className="inline-block bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 px-8 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg shadow-purple-500/30"

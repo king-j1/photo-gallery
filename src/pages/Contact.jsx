@@ -60,7 +60,7 @@ function Contact() {
               Let's Create Together
             </h1>
             <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-              Book our studio, join our talent network, or discuss your next project. 
+              Book our studio, join our Models network, or discuss your next project. 
               We're ready to bring your vision to life.
             </p>
           </div>
@@ -111,7 +111,7 @@ function Contact() {
                       value={formData.phone}
                       onChange={handleChange}
                       className="w-full px-4 py-3 bg-white/5 border-white/10 rounded-lg focus:outline-none focus:border-purple-500 focus:bg-white/10 transition-all text-white placeholder-gray-500"
-                      placeholder="+233 XX XXXX"
+                      placeholder="+233 24 244 5665"
                     />
                   </div>
                 </div>
@@ -126,7 +126,7 @@ function Contact() {
                     className="w-full px-4 py-3 bg-white/5 border-white/10 rounded-lg focus:outline-none focus:border-purple-500 focus:bg-white/10 transition-all text-white"
                   >
                     <option value="booking" className="bg-gray-900">Book Studio Session</option>
-                    <option value="talent" className="bg-gray-900">Join Talent Network</option>
+                    <option value="Models" className="bg-gray-900">Join Models Network</option>
                     <option value="commercial" className="bg-gray-900">Commercial Project</option>
                     <option value="collaboration" className="bg-gray-900">Brand Collaboration</option>
                     <option value="other" className="bg-gray-900">Other</option>
@@ -196,7 +196,7 @@ function Contact() {
                   <div>
                     <p className="font-semibold text-lg">Phone</p>
                     <a href="tel:+233XXXXXXXXX" className="text-gray-300 hover:text-purple-400 transition-colors">
-                      +233 XX XXXX
+                      +233 24 244 5665
                     </a>
                   </div>
                 </div>

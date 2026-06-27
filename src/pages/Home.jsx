@@ -255,7 +255,7 @@ function Home() {
 
       <section className="py-16 px-4">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-8">Browse All Talent</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-8">Browse All Models</h2>
 
           <div className="max-w-md mx-auto mb-12">
             <input
@@ -318,7 +318,7 @@ function Home() {
         <div className="max-w-4xl mx-auto text-center">
           <div className="bg-gradient-to-r from-purple-900/30 to-pink-900/30 border-purple-500/30 rounded-2xl p-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to Work With Us?</h2>
-            <p className="text-gray-300 mb-8">Book our studio or join our talent network today</p>
+            <p className="text-gray-300 mb-8">Book our studio or join our Models network today</p>
             <div className="flex gap-4 justify-center flex-wrap">
               <Link
                 to="/contact"

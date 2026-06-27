@@ -22,7 +22,7 @@ function Footer() {
           <div className="col-span-1 md:col-span-2">
             <Link to="/" className="flex items-center gap-2 mb-4">
               <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg"></div>
-              <span className="text-xl font-bold text-white">PhotoGallery</span>
+              <span className="text-xl font-bold text-white">Tugbe</span>
             </Link>
             <p className="text-gray-400 mb-4 max-w-md">
               Share and discover amazing photos from around the world. Join our community of photographers and creators.
@@ -64,11 +64,11 @@ function Footer() {
             <ul className="space-y-3 mb-6">
               <li className="flex items-center gap-2 text-gray-400">
                 <Mail size={16} className="text-purple-500" />
-                <span>hello@photogallery.com</span>
+                <span>hello@Tugbe.com</span>
               </li>
               <li className="flex items-center gap-2 text-gray-400">
                 <Phone size={16} className="text-purple-500" />
-                <span>+233 24 123 4567</span>
+                <span>+233 24 244 5665</span>
               </li>
               <li className="flex items-center gap-2 text-gray-400">
                 <MapPin size={16} className="text-purple-500" />
@@ -102,7 +102,7 @@ function Footer() {
         {/* Bottom Bar */}
         <div className="border-t border-gray-800 mt-12 pt-8 text-center">
           <p className="text-gray-500 text-sm">
-            © 2026 PhotoGallery. All rights reserved. Built with ❤️ in Accra by Vasco Galley 
+            © 2026 Tugbe. All rights reserved. Built with ❤️ in Accra by Vasco Galley 
           </p>
         </div>
       </div>
