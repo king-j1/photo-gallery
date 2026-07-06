@@ -1,109 +1,70 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, Phone, MapPin, Send } from 'lucide-react';
-import { FaFacebook, FaTwitter, FaInstagram } from 'react-icons/fa';
+import { FaInstagram, FaFacebookF, FaTwitter } from 'react-icons/fa';
 
 function Footer() {
   const [email, setEmail] = useState('');
 
   const handleSubscribe = (e) => {
     e.preventDefault();
-    console.log('Subscribed:', email);
     setEmail('');
   };
 
   return (
-    <footer className="bg-black border-t border-gray-800 mt-20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          
-          {/* Brand + About */}
-          <div className="col-span-1 md:col-span-2">
-            <Link to="/" className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg"></div>
-              <span className="text-xl font-bold text-white">Tugbe</span>
-            </Link>
-            <p className="text-gray-400 mb-4 max-w-md">
-              Share and discover amazing photos from around the world. Join our community of photographers and creators.
+    <footer className="border-t border-white/10 bg-[#040407] text-gray-200">
+      <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+        <div className="grid gap-12 lg:grid-cols-4">
+          <div className="lg:col-span-2 space-y-6">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-3xl bg-gradient-to-br from-fuchsia-500 via-purple-600 to-slate-900 shadow-[0_20px_60px_rgba(168,85,247,0.22)]">
+                <span className="text-lg font-semibold text-white">T</span>
+              </div>
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.45em] text-gray-400">Tugbe Studio</p>
+                <p className="text-xl font-semibold text-white">Luxury Model Agency</p>
+              </div>
+            </div>
+            <p className="max-w-xl text-gray-400">
+              Discover premium fashion talent, editorial portfolios, and campaign-ready models curated for luxury brands.
             </p>
-            
-            {/* Social Icons - react-icons version */}
-            <div className="flex gap-4 text-xl">
-              <a href="#" className="text-gray-400 hover:text-blue-500 transition-colors">
-                <FaFacebook />
-              </a>
-              <a href="#" className="text-gray-400 hover:text-sky-400 transition-colors">
-                <FaTwitter />
-              </a>
-              <a href="#" className="text-gray-400 hover:text-pink-500 transition-colors">
-                <FaInstagram />
-              </a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-2.5-.01-5.01.01-7.51z"/>
-                </svg>
-              </a>
+            <div className="flex items-center gap-4 text-2xl text-gray-400">
+              <a href="#" className="transition hover:text-white"><FaInstagram /></a>
+              <a href="#" className="transition hover:text-white"><FaFacebookF /></a>
+              <a href="#" className="transition hover:text-white"><FaTwitter /></a>
             </div>
           </div>
 
-          {/* Quick Links */}
           <div>
-            <h3 className="text-white font-semibold mb-4">Quick Links</h3>
-            <ul className="space-y-2">
-              <li><Link to="/" className="text-gray-400 hover:text-white transition-colors">Home</Link></li>
-              <li><Link to="/about" className="text-gray-400 hover:text-white transition-colors">About</Link></li>
-              <li><Link to="/contact" className="text-gray-400 hover:text-white transition-colors">Contact</Link></li>
-              <li><Link to="/login" className="text-gray-400 hover:text-white transition-colors">Login</Link></li>
+            <h3 className="text-sm font-semibold uppercase tracking-[0.3em] text-gray-400">Explore</h3>
+            <ul className="mt-6 space-y-3 text-sm text-gray-300">
+              <li><Link to="/" className="transition hover:text-white">Home</Link></li>
+              <li><Link to="/about" className="transition hover:text-white">About</Link></li>
+              <li><Link to="/contact" className="transition hover:text-white">Contact</Link></li>
+              <li><Link to="/login" className="transition hover:text-white">Login</Link></li>
             </ul>
           </div>
 
-          {/* Contact + Subscribe */}
           <div>
-            <h3 className="text-white font-semibold mb-4">Get In Touch</h3>
-            <ul className="space-y-3 mb-6">
-              <li className="flex items-center gap-2 text-gray-400">
-                <Mail size={16} className="text-purple-500" />
-                <span>hello@Tugbe.com</span>
-              </li>
-              <li className="flex items-center gap-2 text-gray-400">
-                <Phone size={16} className="text-purple-500" />
-                <span>+233 24 244 5665</span>
-              </li>
-              <li className="flex items-center gap-2 text-gray-400">
-                <MapPin size={16} className="text-purple-500" />
-                <span>Accra, Ghana</span>
-              </li>
-            </ul>
-
-            {/* Subscribe Form */}
-            <form onSubmit={handleSubscribe}>
-              <label className="text-white font-semibold mb-2 block">Subscribe</label>
-              <div className="flex">
-                <input
-                  type="email"
-                  placeholder="Enter email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  className="flex-1 bg-gray-900 border-gray-700 rounded-l-lg px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors"
-                />
-                <button 
-                  type="submit"
-                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 px-4 py-2 rounded-r-lg transition-all duration-200"
-                >
-                  <Send size={18} className="text-white" />
-                </button>
-              </div>
+            <h3 className="text-sm font-semibold uppercase tracking-[0.3em] text-gray-400">Stay in the loop</h3>
+            <p className="mt-4 text-sm text-gray-400">Join our newsletter for exclusive castings and production updates.</p>
+            <form onSubmit={handleSubscribe} className="mt-6 space-y-3">
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your email"
+                className="w-full rounded-3xl border border-white/10 bg-[#09090f] px-4 py-3 text-sm text-white placeholder:text-gray-500 focus:border-fuchsia-500 focus:outline-none"
+              />
+              <button type="submit" className="inline-flex w-full items-center justify-center rounded-full bg-gradient-to-r from-fuchsia-500 via-purple-600 to-pink-500 px-5 py-3 text-sm font-semibold uppercase tracking-[0.18em] text-white transition hover:-translate-y-0.5">
+                <Send size={18} className="mr-2" /> Subscribe
+              </button>
             </form>
           </div>
         </div>
 
-        {/* Bottom Bar */}
-        <div className="border-t border-gray-800 mt-12 pt-8 text-center">
-          <p className="text-gray-500 text-sm">
-            © 2026 Tugbe. All rights reserved. Built with ❤️ in Accra by Vasco Galley 
-          </p>
+        <div className="mt-12 border-t border-white/10 pt-8 text-center text-sm text-gray-500">
+          <p>© 2026 Tugbe Studio. All rights reserved.</p>
         </div>
       </div>
     </footer>
