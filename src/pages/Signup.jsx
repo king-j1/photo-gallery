@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { signup } from '../api/api.js';
 
 function Signup() {
   const navigate = useNavigate();
@@ -20,10 +21,7 @@ function Signup() {
     setFormData({...formData, [e.target.name]: e.target.value });
   };
 
-  // STATIC SIGNUP - saves to localStorage instead of Django
-  const handleSubmit = (e) => {
-    console.log("NEW SIGNUP FUNCTION RUNNING");
-    
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
@@ -34,34 +32,31 @@ function Signup() {
       return;
     }
 
-    setTimeout(() => {
-      // Check if user already exists
-     console.log("CHECKING USERS");
+    try {
+      const data = await signup(formData);
 
-    const users = JSON.parse(localStorage.getItem("demo_users")) || [];
-
-    console.log("CURRENT USERS:", users);
-
-      // Save user to localStorage - this is what Dashboard reads
-      const userToSave = {
-        username: formData.username,
-        email: formData.email,
-        first_name: formData.first_name,
-        last_name: formData.last_name,
-        phone: formData.phone,
-        avatar: null
-      }
-
-      localStorage.setItem("demo_user", JSON.stringify(userToSave));
+      localStorage.setItem("access_token", data.access);
+      localStorage.setItem("refresh_token", data.refresh);
       localStorage.setItem("is_logged_in", "true");
-      localStorage.setItem("access_token", "demo_token_123"); // fake token for Dashboard
 
       setSuccess(true);
-      setLoading(false);
-
-      // Redirect to dashboard after 2s
       setTimeout(() => navigate("/dashboard"), 2000);
-    }, 800);
+    } catch (err) {
+      let message = 'Signup failed. Please check your details.';
+      try {
+        const parsed = JSON.parse(err.body || '{}');
+        const firstKey = Object.keys(parsed)[0];
+        if (firstKey) {
+          const value = parsed[firstKey];
+          message = Array.isArray(value) ? value[0] : String(value);
+        }
+      } catch {
+        if (err.body) message = err.body;
+      }
+      setError(message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
