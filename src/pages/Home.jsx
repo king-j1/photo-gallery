@@ -1,8 +1,25 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { fetchModels } from '../api/api';
+import { fetchModels, toAbsoluteMediaUrl } from '../api/api';
 
 const fallbackYear = new Date().getFullYear();
+
+const staticFallbackModels = [
+  {
+    id: 'fallback-1',
+    name: 'Featured Talent',
+    profile: 'Temporary fallback while live portfolio data reconnects.',
+    main_image: '/photos/afr6.avif',
+    photos: []
+  },
+  {
+    id: 'fallback-2',
+    name: 'Studio Highlight',
+    profile: 'Curated highlight from the agency lookbook.',
+    main_image: '/photos/afri7.avif',
+    photos: []
+  }
+];
 
 /*const staticModels = [
   {
@@ -44,6 +61,20 @@ function formatYear(value) {
   return date.getFullYear();
 }
 
+function normalizeModelImages(models) {
+  if (!Array.isArray(models)) return [];
+  return models.map((model) => ({
+    ...model,
+    main_image: toAbsoluteMediaUrl(model.main_image),
+    photos: Array.isArray(model.photos)
+      ? model.photos.map((photo) => ({
+          ...photo,
+          image: toAbsoluteMediaUrl(photo.image)
+        }))
+      : []
+  }));
+}
+
 function Home() {
   const [models, setModels] = useState([]);
   const [selectedModel, setSelectedModel] = useState(null);
@@ -70,15 +101,16 @@ function Home() {
         const data = await fetchModels();
         if (!mounted) return;
         if (Array.isArray(data) && data.length) {
-          setModels(data);
+          setModels(normalizeModelImages(data));
         } else {
-          setModels([]);
+          setModels(normalizeModelImages(staticFallbackModels));
+          setError('Live backend returned no photos. Showing local fallback gallery.');
         }
       } catch (fetchError) {
         if (mounted) {
           const message = fetchError?.message || 'Unable to fetch model list.';
-          setError(`Unable to load models from the backend: ${message}`);
-          setModels([]);
+          setError(`Unable to load models from the backend: ${message}. Showing local fallback gallery.`);
+          setModels(normalizeModelImages(staticFallbackModels));
         }
       } finally {
         if (mounted) setLoading(false);

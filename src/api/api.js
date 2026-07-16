@@ -73,7 +73,15 @@ export async function updateProfile(formData) {
 // ONLY 1 DEFAULT EXPORT AT THE BOTTOM
 export default { fetchModels, healthCheck, updateProfile };*/
 
-const API_BASE = (import.meta.env.VITE_API_URL || 'https://api-project-production-257e.up.railway.app').replace(/\/$/, '');
+export const API_BASE = (import.meta.env.VITE_API_URL || 'https://api-project-production-257e.up.railway.app').replace(/\/$/, '');
+
+export function toAbsoluteMediaUrl(value) {
+  if (!value || typeof value !== 'string') return value;
+  if (value.startsWith('/photos/')) return value;
+  if (/^https?:\/\//i.test(value)) return value.replace(/^http:\/\//i, 'https://');
+  if (value.startsWith('//')) return `https:${value}`;
+  return `${API_BASE}${value.startsWith('/') ? '' : '/'}${value}`;
+}
 
 async function request(path, opts = {}) {
   const token = localStorage.getItem('access_token')
