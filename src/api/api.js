@@ -124,14 +124,6 @@ export async function login(username, password) {
   })
 }
 
-export async function signup(payload) {
-  return request('/api/signup/', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  })
-}
-
 export async function submitContact(payload) {
   return request('/api/contact/', {
     method: 'POST',
@@ -140,4 +132,4 @@ export async function submitContact(payload) {
   })
 }
 
-export default { fetchModels, healthCheck, updateProfile, login, signup, submitContact };
+export default { fetchModels, healthCheck, updateProfile };
