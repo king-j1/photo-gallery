@@ -73,7 +73,15 @@ export async function updateProfile(formData) {
 // ONLY 1 DEFAULT EXPORT AT THE BOTTOM
 export default { fetchModels, healthCheck, updateProfile };*/
 
-export const API_BASE = (import.meta.env.VITE_API_URL || 'https://api-project-production-257e.up.railway.app').replace(/\/$/, '');
+const DEFAULT_API_BASE = 'https://api-project-production-257e.up.railway.app';
+const configuredApiBase = (import.meta.env.VITE_API_URL || DEFAULT_API_BASE).trim();
+
+// Guard against stale deployment env values still pointing at the old Render API.
+const safeApiBase = configuredApiBase.includes('pro-models-api.onrender.com')
+  ? DEFAULT_API_BASE
+  : configuredApiBase;
+
+export const API_BASE = safeApiBase.replace(/\/$/, '');
 
 export function toAbsoluteMediaUrl(value) {
   if (!value || typeof value !== 'string') return value;
