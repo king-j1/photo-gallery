@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Mail, Phone, MapPin, Send } from 'lucide-react';
+import { Send } from 'lucide-react';
 import { FaInstagram, FaFacebookF, FaTwitter } from 'react-icons/fa';
 
 function Footer() {
@@ -64,7 +64,7 @@ function Footer() {
         </div>
 
         <div className="mt-12 border-t border-white/10 pt-8 text-center text-sm text-gray-500">
-          <p>© 2026 Tugbe Studio. All rights reserved.</p>
+          <p>© 2026 Tugbe Studio. All rights reserved. Design & Development by Vasco</p>
         </div>
       </div>
     </footer>

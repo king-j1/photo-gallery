@@ -4,7 +4,7 @@ import { fetchModels } from '../api/api';
 
 const fallbackYear = new Date().getFullYear();
 
-const staticModels = [
+/*const staticModels = [
   {
     id: 1,
     name: 'Queen',
@@ -29,7 +29,7 @@ const staticModels = [
     main_image: '/photos/afr.webp',
     photos: [{ id: 'ama-1', image: '/photos/afri2.jpeg' }]
   }
-];
+];*/
 
 const adSlides = [
   'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=2070',
@@ -72,13 +72,13 @@ function Home() {
         if (Array.isArray(data) && data.length) {
           setModels(data);
         } else {
-          setModels(staticModels);
+          setModels([]);
         }
       } catch (fetchError) {
         if (mounted) {
           const message = fetchError?.message || 'Unable to fetch model list.';
           setError(`Unable to load models from the backend: ${message}`);
-          setModels(staticModels);
+          setModels([]);
         }
       } finally {
         if (mounted) setLoading(false);
@@ -319,6 +319,11 @@ function Home() {
           </div>
 
           <div className="mt-12">
+            {error && (
+              <div className="mb-6 rounded-3xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-200">
+                {error}
+              </div>
+            )}
             {loading ? (
               <div className="rounded-4xl border border-white/10 bg-[#09090f]/90 p-10 text-center text-gray-300 shadow-[0_20px_60px_rgba(0,0,0,0.2)]">
                 Loading the latest models from your backend...

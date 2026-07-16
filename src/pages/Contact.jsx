@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { submitContact } from '../api/api';
 
 function Contact() {
   const [formData, setFormData] = useState({
@@ -9,16 +10,19 @@ function Contact() {
     inquiry_type: 'booking',
     message: ''
   });
+
+
   
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   // STATIC SUBMIT - no API call
-  const handleSubmit = (e) => {
+ /* const handleSubmit = (e) => {
     e.preventDefault();
     setLoading(true);
     
@@ -37,7 +41,24 @@ function Contact() {
       setFormData({ name: '', email: '', phone: '', inquiry_type: 'booking', message: '' });
       setLoading(false);
     }, 1000);
-  };
+  };*/
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError('');
+  setLoading(true);
+
+  try {
+    await submitContact(formData);
+    setSubmitted(true);
+    setFormData({ name: '', email: '', phone: '', inquiry_type: 'booking', message: '' });
+  } catch (err) {
+    setError(err.body || 'Unable to send message right now. Please try again.');
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div className="min-h-screen bg-black text-white relative overflow-hidden">
@@ -71,8 +92,13 @@ function Contact() {
               
               {submitted && (
                 <div className="bg-green-500/20 border-green-500/50 rounded-lg p-4 mb-6">
-                  <p className="text-green-400 font-semibold">✓ Message saved locally!</p>
-                  <p className="text-sm text-gray-300 mt-1">Demo mode: No backend needed. Check browser console to see saved data.</p>
+                  <p className="text-green-400 font-semibold">Message sent successfully.</p>
+                </div>
+              )}
+
+              {error && (
+                <div className="bg-red-500/20 border-red-500/50 rounded-lg p-4 mb-6">
+                  <p className="text-red-300 text-sm">{error}</p>
                 </div>
               )}
 
@@ -126,7 +152,7 @@ function Contact() {
                     className="w-full px-4 py-3 bg-white/5 border-white/10 rounded-lg focus:outline-none focus:border-purple-500 focus:bg-white/10 transition-all text-white"
                   >
                     <option value="booking" className="bg-gray-900">Book Studio Session</option>
-                    <option value="Models" className="bg-gray-900">Join Models Network</option>
+                    <option value="talent" className="bg-gray-900">Join Models Network</option>
                     <option value="commercial" className="bg-gray-900">Commercial Project</option>
                     <option value="collaboration" className="bg-gray-900">Brand Collaboration</option>
                     <option value="other" className="bg-gray-900">Other</option>

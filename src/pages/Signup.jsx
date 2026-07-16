@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 function Signup() {
@@ -22,6 +22,8 @@ function Signup() {
 
   // STATIC SIGNUP - saves to localStorage instead of Django
   const handleSubmit = (e) => {
+    console.log("NEW SIGNUP FUNCTION RUNNING");
+    
     e.preventDefault();
     setError("");
     setLoading(true);
@@ -34,12 +36,11 @@ function Signup() {
 
     setTimeout(() => {
       // Check if user already exists
-      const existingUser = localStorage.getItem('demo_user')
-      if (existingUser) {
-        setError("User already exists. Try logging in instead.")
-        setLoading(false)
-        return
-      }
+     console.log("CHECKING USERS");
+
+    const users = JSON.parse(localStorage.getItem("demo_users")) || [];
+
+    console.log("CURRENT USERS:", users);
 
       // Save user to localStorage - this is what Dashboard reads
       const userToSave = {
@@ -73,7 +74,7 @@ function Signup() {
           Create Account
         </h1>
         <p className="text-white/70 text-center mb-8 text-sm">
-          Demo mode - saved locally in your browser
+        
         </p>
 
         {error && (
@@ -208,7 +209,7 @@ function Signup() {
         </p>
       </div>
 
-      <style jsx>{`
+      <style >{`
         @keyframes float {
           0%,
           100% {
