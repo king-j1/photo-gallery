@@ -253,32 +253,22 @@ function Dashboard() {
           return
         }
 
-        // 1. GET PROFILE
-        const res = await fetch(`${API_BASE}/api/profile/`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
+        // 1. GET DASHBOARD (single source for user + messages)
+        const dashboardRes = await fetch(`${API_BASE}/api/dashboard/`, {
+          headers: { 'Authorization': `Bearer ${token}` }
         })
 
-        if (res.status === 401) { // token expired
+        if (dashboardRes.status === 401) { // token expired
           localStorage.clear()
           navigate('/login')
           return
         }
-        if (!res.ok) throw new Error('Failed to fetch profile')
+        if (!dashboardRes.ok) throw new Error('Failed to fetch dashboard')
 
-        const userData = await res.json()
-        setUser(userData)
-        setFormData(userData) // prefill edit form
-
-        // 2. GET MESSAGES - only if you have this endpoint
-        const msgRes = await fetch(`${API_BASE}/api/dashboard/`, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        })
-        if (msgRes.ok) {
-          const msgData = await msgRes.json()
-          setMessages(msgData.messages || [])
-        }
+        const dashboardData = await dashboardRes.json()
+        setUser(dashboardData.user || null)
+        setFormData(dashboardData.user || {})
+        setMessages(dashboardData.messages || [])
 
         setLoading(false)
 
