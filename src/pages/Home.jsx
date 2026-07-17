@@ -49,10 +49,10 @@ const staticFallbackModels = [
 ];*/
 
 const adSlides = [
-  'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=2070',
-  'https://images.unsplash.com/photo-1519608487953-e999c86e7455?q=80&w=2070',
-  'https://images.unsplash.com/photo-1542038784456-1ea8e935640e?q=80&w=2070',
-  'https://images.unsplash.com/photo-1452780212940-6f5c0d14d848?q=80&w=2070'
+  'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=1400&auto=format&fit=crop',
+  'https://images.unsplash.com/photo-1519608487953-e999c86e7455?q=80&w=1400&auto=format&fit=crop',
+  'https://images.unsplash.com/photo-1542038784456-1ea8e935640e?q=80&w=1400&auto=format&fit=crop',
+  'https://images.unsplash.com/photo-1452780212940-6f5c0d14d848?q=80&w=1400&auto=format&fit=crop'
 ];
 
 function formatYear(value) {
@@ -271,7 +271,14 @@ function Home() {
               idx === slideIndex ? 'opacity-100' : 'opacity-0'
             }`}
           >
-            <img src={img} alt={`Scene ${idx + 1}`} className="h-full w-full object-cover" />
+            <img
+              src={img}
+              alt={`Scene ${idx + 1}`}
+              className="h-full w-full object-cover"
+              loading={idx === 0 ? 'eager' : 'lazy'}
+              decoding="async"
+              fetchPriority={idx === 0 ? 'high' : 'low'}
+            />
             <div className="absolute inset-0 bg-linear-to-b from-black/30 via-black/10 to-black/80" />
           </div>
         ))}
@@ -378,6 +385,8 @@ function Home() {
                               src={cover}
                               alt={model.name}
                               className="h-72 w-full object-cover object-top transition duration-500 group-hover:scale-105"
+                              loading="lazy"
+                              decoding="async"
                             />
                           ) : (
                             <div className="flex h-72 items-center justify-center bg-gray-900 text-gray-500">No image</div>
@@ -457,6 +466,8 @@ function Home() {
                   alt={`${selectedModel.name} ${photoIndex + 1}`}
                   onDoubleClick={handleDoubleClick}
                   className="max-h-full w-auto object-contain transition-transform duration-200"
+                  loading="eager"
+                  decoding="async"
                   style={{ transform: `scale(${zoom}) translate(${panX / zoom}px, ${panY / zoom}px)`, transformOrigin: 'center center' }}
                   draggable={false}
                 />
@@ -485,7 +496,7 @@ function Home() {
                     }}
                     className={`h-20 w-20 shrink-0 overflow-hidden rounded-3xl border-2 ${idx === photoIndex ? 'border-fuchsia-500' : 'border-white/10'} transition-all`}
                   >
-                    <img src={img.image} alt={`thumb-${idx}`} className="h-full w-full object-cover" />
+                    <img src={img.image} alt={`thumb-${idx}`} className="h-full w-full object-cover" loading="lazy" decoding="async" />
                   </button>
                 ))}
               </div>
