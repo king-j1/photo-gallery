@@ -228,9 +228,7 @@ export default Dashboard */}
 
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { updateProfile } from '../api/api.js'
-
-const API_URL = import.meta.env.VITE_API_URL || 'https://api-project-production-257e.up.railway.app'
+import { updateProfile, API_BASE } from '../api/api.js'
 
 function Dashboard() {
   const navigate = useNavigate()
@@ -256,7 +254,7 @@ function Dashboard() {
         }
 
         // 1. GET PROFILE
-        const res = await fetch(`${API_URL}/api/profile/`, {
+        const res = await fetch(`${API_BASE}/api/profile/`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -274,7 +272,7 @@ function Dashboard() {
         setFormData(userData) // prefill edit form
 
         // 2. GET MESSAGES - only if you have this endpoint
-        const msgRes = await fetch(`${API_URL}/api/dashboard/`, {
+        const msgRes = await fetch(`${API_BASE}/api/dashboard/`, {
           headers: { 'Authorization': `Bearer ${token}` }
         })
         if (msgRes.ok) {
@@ -333,7 +331,7 @@ function Dashboard() {
   const handleDelete = async () => {
     try {
       const token = getToken()
-      const res = await fetch(`${API_URL}/api/delete-account/`, { // <-- FIXED
+      const res = await fetch(`${API_BASE}/api/delete-account/`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       })
